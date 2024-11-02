@@ -47,9 +47,10 @@ export default function LoginPage() {
                       <FormLabel>Email</FormLabel>
                       <FormControl>
                         <Input
+                          autoFocus
                           type="email"
                           spellCheck="false"
-                          placeholder="username@example.com"
+                          placeholder="jhondoe123@example.com"
                           {...field}
                         />
                       </FormControl>
@@ -58,26 +59,28 @@ export default function LoginPage() {
                   )}
                 />
 
-                <FormField
-                  control={form.control}
-                  name="password"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Password</FormLabel>
-                      <FormControl>
-                        <Input
-                          type="password"
-                          placeholder=""
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                <div className="space-y-2">
+                  <FormField
+                    control={form.control}
+                    name="password"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Password</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="password"
+                            placeholder=""
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
-                <div className="flex justify-end">
-                  <Link to="/forgot-password" className="text-sm underline hover:text-red-600">Forgot password?</Link>
+                  <div className="flex justify-end">
+                    <Link to="/forgot-password" className="text-sm underline hover:text-red-600">Forgot password?</Link>
+                  </div>
                 </div>
 
                 <Button className="w-full" type="submit">Sign in</Button>

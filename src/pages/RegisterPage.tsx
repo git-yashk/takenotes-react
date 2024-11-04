@@ -5,28 +5,43 @@ import { Input } from "@/components/ui/input";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useMutation } from "@tanstack/react-query";
+import { register } from "@/http/api";
+import { LoaderCircle } from "lucide-react";
 
 const formSchema = z.object({
   name: z.string().min(4, { message: "Please enter your name." }).max(50).trim(),
   email: z.string().min(8, { message: "Please enter a valid email address." }).max(50).trim(),
   password: z.string().min(8, { message: "Password must be at least 8 characters long." }).max(50).trim(),
-})
+});
 
 export default function RegisterPage() {
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      name: "",
       email: "",
       password: "",
     },
-  })
+  });
+
+  const navigate = useNavigate();
+
+  const mutation = useMutation({
+    mutationFn: register,
+    onSuccess: () => {
+      console.log("Registered successfully");
+      navigate("/auth/login");
+    },
+    onError: () => {
+      console.log("Login failed");
+    },
+  });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
-    console.log(values)
+    mutation.mutate(values);
   }
 
   return (
@@ -49,7 +64,7 @@ export default function RegisterPage() {
                       <FormControl>
                         <Input
                           autoFocus
-                          type="email"
+                          type="text"
                           spellCheck="false"
                           placeholder="John Doe"
                           {...field}
@@ -97,7 +112,12 @@ export default function RegisterPage() {
                   )}
                 />
 
-                <Button className="w-full" type="submit">Sign in</Button>
+                <Button disabled={mutation.isPending} className="w-full" type="submit">
+                  {
+                    mutation.isPending ? <LoaderCircle className="animate-spin" /> : <></>
+                  }
+                  <span>Create account</span>
+                </Button>
               </form>
             </Form>
           </CardContent>

@@ -1,7 +1,12 @@
 import { create } from 'zustand'
 import { devtools, persist } from 'zustand/middleware';
 
-const useTokenStore = create(
+export interface TokenType {
+    token: string;
+    setToken: (data: string) => void;
+}
+
+const useTokenStore = create<TokenType>()(
     devtools(
         persist((set) => ({
             token: "",

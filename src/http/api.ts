@@ -29,3 +29,8 @@ export async function register({ name, email, password }: { name: string, email:
     const response = await api.post("/api/users/register", { name, email, password });
     return response;
 };
+
+export async function login({ email, password }: { email: string, password: string }) {
+    const response = await api.post("/api/users/login", { email, password });
+    return response;
+};

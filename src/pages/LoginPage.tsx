@@ -5,7 +5,10 @@ import { Input } from "@/components/ui/input";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { login } from "@/http/api";
+import { useMutation } from "@tanstack/react-query";
+import useTokenStore from "@/zustand_store";
 
 const formSchema = z.object({
   email: z.string().min(8, { message: "Please enter a valid email address." }).max(50).trim(),
@@ -20,12 +23,25 @@ export default function LoginPage() {
       email: "",
       password: "",
     },
-  })
+  });
+
+  const navigate = useNavigate();
+  const setToken = useTokenStore((state) => state.setToken);
+
+  const mutation = useMutation({
+    mutationFn: login,
+    onSuccess: (response) => {
+      console.log("Login successful");
+      setToken((response.data as { accessToken: string }).accessToken);
+      navigate("/");
+    },
+    onError: () => {
+      console.log("Login failed");
+    },
+  });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
-    console.log(values)
+    mutation.mutate(values);
   }
 
   return (

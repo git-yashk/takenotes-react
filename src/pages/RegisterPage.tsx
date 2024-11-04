@@ -32,11 +32,11 @@ export default function RegisterPage() {
   const mutation = useMutation({
     mutationFn: register,
     onSuccess: () => {
-      console.log("Registered successfully");
+      console.log("Registration successful");
       navigate("/auth/login");
     },
     onError: () => {
-      console.log("Login failed");
+      console.log("Registration failed");
     },
   });
 

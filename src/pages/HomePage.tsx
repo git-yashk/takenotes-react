@@ -1,10 +1,50 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
+import { Textarea } from "@/components/ui/textarea";
 import { Link } from "react-router-dom";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useState } from "react";
+
+const FormSchema = z.object({
+    title: z.string().max(500),
+    content: z.string().max(5000),
+    bg_color: z.optional(z.string()),
+});
 
 export default function HomePage() {
+
+    const [open, setOpen] = useState(false);
+
+    function toggleDialogBox() {
+        form.resetField("title", { defaultValue: undefined });
+        form.resetField("content", { defaultValue: undefined });
+        form.resetField("bg_color", { defaultValue: undefined });
+        setOpen(!open);
+    }
+
+    const form = useForm<z.infer<typeof FormSchema>>({
+        resolver: zodResolver(FormSchema),
+    });
+
+    function onSubmit(values: z.infer<typeof FormSchema>) {
+        // Do something with the form values.
+        // ✅ This will be type-safe and validated.
+        form.resetField("title", { defaultValue: undefined });
+        form.resetField("content", { defaultValue: undefined });
+        form.resetField("bg_color", { defaultValue: undefined });
+        console.log(values)
+        setOpen(false);
+    }
+
     return (
         <>
+            {/* header */}
             <header className="flex items-center justify-between border-b h-16 shadow-sm px-4">
                 <Link to="/" className="flex items-center gap-3 select-none">
                     <svg height="32" fill="#09090b" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512">
@@ -33,9 +73,106 @@ export default function HomePage() {
                 </DropdownMenu>
             </header>
 
-            <div>
-                
-            </div>
+            {/* input note */}
+            <section className="px-4">
+                <Dialog open={open} onOpenChange={toggleDialogBox}>
+                    <DialogTrigger asChild>
+                        <div
+                            className="m-8 w-full md:w-[567px] block mx-auto border px-4 py-2 rounded-md cursor-text shadow-sm"
+                        >Take a note...</div>
+                    </DialogTrigger>
+                    <DialogContent className="sm:max-w-[567px]">
+                        <DialogHeader>
+                            <DialogTitle>Take a note</DialogTitle>
+                            <DialogDescription></DialogDescription>
+                        </DialogHeader>
+                        <Form {...form}>
+                            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                                <FormField
+                                    control={form.control}
+                                    name="title"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormControl>
+                                                <Textarea
+                                                    placeholder="Title"
+                                                    rows={1}
+                                                    className="resize-none w-full"
+                                                    {...field}
+                                                />
+                                            </FormControl>
+                                        </FormItem>
+                                    )}
+                                />
+                                <FormField
+                                    control={form.control}
+                                    name="content"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormControl>
+                                                <Textarea
+                                                    placeholder="Take a note..."
+                                                    rows={5}
+                                                    className="resize-none w-full"
+                                                    {...field}
+                                                />
+                                            </FormControl>
+                                        </FormItem>
+                                    )}
+                                />
+                                <FormField
+                                    control={form.control}
+                                    name="bg_color"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                                <FormControl>
+                                                    <SelectTrigger>
+                                                        <SelectValue placeholder="Select note background" />
+                                                    </SelectTrigger>
+                                                </FormControl>
+                                                <SelectContent>
+                                                    <SelectItem value="#FF91A4">
+                                                        <div className="flex items-center gap-2">
+                                                            <span>Salmon pink</span>
+                                                            <div className="w-4 h-4 rounded-full bg-[#FF91A4] border border-black"></div>
+                                                        </div>
+                                                    </SelectItem>
+                                                    <SelectItem value="#F0FFF0">
+                                                        <div className="flex items-center gap-2">
+                                                            <span>Honeydew</span>
+                                                            <div className="w-4 h-4 rounded-full bg-[#F0FFF0] border border-black"></div>
+                                                        </div>
+                                                    </SelectItem>
+                                                    <SelectItem value="#F2BDCD">
+                                                        <div className="flex items-center gap-2">
+                                                            <span>Orchid pink</span>
+                                                            <div className="w-4 h-4 rounded-full bg-[#F2BDCD] border border-black"></div>
+                                                        </div>
+                                                    </SelectItem>
+                                                    <SelectItem value="#AFDBF5">
+                                                        <div className="flex items-center gap-2">
+                                                            <span>Uranian blue</span>
+                                                            <div className="w-4 h-4 rounded-full bg-[#AFDBF5] border border-black"></div>
+                                                        </div>
+                                                    </SelectItem>
+                                                    <SelectItem value="#E3F988">
+                                                        <div className="flex items-center gap-2">
+                                                            <span>Mindaro</span>
+                                                            <div className="w-4 h-4 rounded-full bg-[#E3F988] border border-black"></div>
+                                                        </div>
+                                                    </SelectItem>
+                                                </SelectContent>
+                                            </Select>
+                                        </FormItem>
+                                    )}
+                                />
+                                <Button className="w-full" type="submit">Submit</Button>
+                            </form>
+                        </Form>
+                    </DialogContent>
+                </Dialog>
+            </section>
         </>
     )
 }

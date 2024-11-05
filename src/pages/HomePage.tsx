@@ -9,7 +9,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useMutation } from "@tanstack/react-query";
+import { createNote, getNotes, Note } from "@/http/api";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 const FormSchema = z.object({
     title: z.string().max(500),
@@ -20,6 +23,14 @@ const FormSchema = z.object({
 export default function HomePage() {
 
     const [open, setOpen] = useState(false);
+    const [notes, setNotes] = useState<Note[]>([]);
+
+    useEffect(() => {
+        (async () => {
+            const response = await getNotes();
+            setNotes(response);
+        })();
+    }, []);
 
     function toggleDialogBox() {
         form.resetField("title", { defaultValue: undefined });
@@ -32,13 +43,22 @@ export default function HomePage() {
         resolver: zodResolver(FormSchema),
     });
 
+    const mutation = useMutation({
+        mutationFn: createNote,
+        onSuccess: (response) => {
+            console.log(response);
+            setNotes([...notes, response]);
+        },
+        onError: () => {
+            console.log("Error while creating note");
+        },
+    });
+
     function onSubmit(values: z.infer<typeof FormSchema>) {
-        // Do something with the form values.
-        // ✅ This will be type-safe and validated.
+        mutation.mutate(values);
         form.resetField("title", { defaultValue: undefined });
         form.resetField("content", { defaultValue: undefined });
         form.resetField("bg_color", { defaultValue: undefined });
-        console.log(values)
         setOpen(false);
     }
 
@@ -78,7 +98,7 @@ export default function HomePage() {
                 <Dialog open={open} onOpenChange={toggleDialogBox}>
                     <DialogTrigger asChild>
                         <div
-                            className="m-8 w-full md:w-[567px] block mx-auto border px-4 py-2 rounded-md cursor-text shadow-sm"
+                            className="m-8 w-full md:w-[567px] mx-auto border px-4 py-2 rounded-md cursor-text shadow-sm"
                         >Take a note...</div>
                     </DialogTrigger>
                     <DialogContent className="sm:max-w-[567px]">
@@ -172,6 +192,24 @@ export default function HomePage() {
                         </Form>
                     </DialogContent>
                 </Dialog>
+            </section>
+
+            {/* display notes */}
+            <section className="px-4">
+                {
+                    notes.map((note) => (
+                        <div key={note._id} className="m-4 md:w-[567px] mx-auto shadow-sm">
+                            <Card className={`bg-[${note.bg_color}]`}>
+                                <CardHeader>
+                                    <CardTitle>{note.title}</CardTitle>
+                                </CardHeader>
+                                <CardContent className="text-sm">
+                                    <p>{note.content}</p>
+                                </CardContent>
+                            </Card>
+                        </div>
+                    ))
+                }
             </section>
         </>
     )

@@ -12,7 +12,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useEffect, useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { createNote, getNotes, Note } from "@/http/api";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Pencil, Trash2 } from "lucide-react";
 
 const FormSchema = z.object({
     title: z.string().max(500),
@@ -206,6 +207,10 @@ export default function HomePage() {
                                 <CardContent className="text-sm">
                                     <p>{note.content}</p>
                                 </CardContent>
+                                <CardFooter className="flex justify-end gap-4 py-0">
+                                    <Button variant="link" className="p-0"><Pencil size={14} /></Button>
+                                    <Button variant="link" className="p-0"><Trash2 size={14} /></Button>
+                                </CardFooter>
                             </Card>
                         </div>
                     ))
